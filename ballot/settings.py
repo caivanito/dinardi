@@ -125,3 +125,13 @@ STATIC_ROOT = BASE_DIR / "static"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+from ballot.environs import WORKER_ENVS
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    "CHECK_STATUS_VOTING": {
+        "task": "voting.tasks.check_status",
+        "schedule": crontab(minute='*/1'),
+        'options': {'queue' : WORKER_ENVS['worker_cron_queue_name']},
+    },
+}

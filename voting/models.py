@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -108,5 +109,14 @@ class VotingStatus(models.Model):
         return '{}'.format(text)
     
     class Meta:
-        verbose_name = 'Voto'
-        verbose_name_plural = 'Votos'
+        verbose_name = 'Estado de Votación'
+        verbose_name_plural = 'Estados de Votación'
+
+    
+    def is_past_close_time(self):
+        if self.close:
+            return True
+        else:
+            if self.date_time_close:
+                return timezone.now() >= self.date_time_close
+        return False
