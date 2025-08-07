@@ -6,11 +6,12 @@ Este proyecto es una aplicación web para gestionar elecciones tipo ballotage, d
 
 ## 🛠️ Tecnologías utilizadas
 
-- Python 3  
+- Python 3.11  
 - Django  
 - PostgreSQL  
 - Docker & Docker Compose  
-- Bootstrap 5  
+- Bootstrap 5
+- Celery
 
 ---
 
