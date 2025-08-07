@@ -1,0 +1,12 @@
+<div class="mb-3">
+    <label for="id_locality" class="form-label">Localidad</label>
+    <select name="locality" id="id_locality" class="form-select"
+            hx-get="{% url 'load_zones' %}" 
+            hx-target="#zone-container" 
+            hx-trigger="change">
+        <option value="">Seleccione una localidad</option>
+        {% for loc in localities %}
+            <option value="{{ loc.id }}">{{ loc.name }}</option>
+        {% endfor %}
+    </select>
+</div>

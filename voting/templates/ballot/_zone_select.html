@@ -1,0 +1,9 @@
+<div class="mb-3">
+    <label for="id_zone" class="form-label">Zona</label>
+    <select name="zone" id="id_zone" class="form-select">
+        <option value="">Seleccione una zona</option>
+        {% for zone in zones %}
+            <option value="{{ zone.id }}">{{ zone.name }}</option>
+        {% endfor %}
+    </select>
+</div>

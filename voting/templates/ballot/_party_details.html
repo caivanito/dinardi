@@ -1,0 +1,15 @@
+{% if party %}
+    <div class="card border-info mt-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ party.party_name }}</h5>
+            <p><strong>Número:</strong> {{ party.party_number }}</p>
+            <p><strong>Presidente:</strong> {{ party.president }}</p>
+            <p><strong>Vicepresidente:</strong> {{ party.vice_president }}</p>
+            <p><em>"{{ party.slogan }}"</em></p>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-warning mt-3">
+        Seleccione un partido político para ver sus detalles.
+    </div>
+{% endif %}

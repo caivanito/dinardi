@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Voto Exitoso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+
+    <div class="text-center">
+        <div class="alert alert-success shadow-lg" role="alert">
+            <h4 class="alert-heading">¡Voto registrado con éxito! 🗳️</h4>
+            <p>Tu voto ha sido emitido correctamente.</p>
+            <hr>
+            <p class="mb-0">Gracias por participar en esta elección.</p>
+        </div>
+        <a href="{% url 'index' %}" class="btn btn-outline-success mt-3">Volver al inicio</a>
+        <a href="{% url 'results' %}" class="btn btn-outline-success mt-3">Ver resultados</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

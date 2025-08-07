@@ -1,0 +1,129 @@
+services:
+  db:
+    image: postgres
+    command: postgres -c 'max_connections=500' -p ${LOCAL_DB_PORT}
+    container_name: data_base_${PROJECT_NAME}
+    environment:
+      POSTGRES_USER: ${LOCAL_DB_USER}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+    - "${LOCAL_DB_PORT}"
+    ports:
+      - "${LOCAL_DB_PORT}:${LOCAL_DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks: 
+      - default
+    restart: always
+
+  app:
+    container_name: app_${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn --workers=4 --threads=4 ${PROJECT_NAME}.wsgi:application --bind 0.0.0.0:8000 --reload
+    volumes:
+      - .:/code/
+      - ./static/:/code/static/
+    expose:
+      - 8000
+    depends_on:
+      - db
+    networks: 
+      - default
+    links:
+    - db:db
+    env_file:
+      - .var_envs
+    restart: always
+
+  redis:
+    container_name: redis_${PROJECT_NAME}
+    image: redis
+    networks: 
+      - default
+    restart: always
+
+  celery:
+    container_name: celery_${WORKER_CRON_QUEUE_NAME}_${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code/
+      - ./static/:/code/static/
+    env_file:
+      - .var_envs
+    command: celery -A ${PROJECT_NAME} worker -n ${WORKER_CRON_QUEUE_NAME}@${WORKER_HOSTNAME} --concurrency=${WORKER_CONCURRENCY} -l info -Q ${WORKER_CRON_QUEUE_NAME}
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis_${PROJECT_NAME}:6379/0
+    restart: always
+    networks: 
+      - default
+  
+
+  beat:
+    container_name: beat_${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code/
+      - ./static/:/code/static/
+    command: celery -A ${PROJECT_NAME} beat -l info
+    env_file:
+      - .var_envs
+    depends_on:
+      - redis
+      - celery
+    links:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis_${PROJECT_NAME}:6379/0
+    restart: always
+    networks: 
+      - default
+
+  flower:
+    container_name: flower_${PROJECT_NAME}
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis_${PROJECT_NAME}:6379/0
+      - FLOWER_PORT=8887
+    ports:  
+      - 8887:8887
+    depends_on:
+      - redis
+    networks: 
+      - default
+    restart: always
+
+  nginx:
+    container_name: nginx_${PROJECT_NAME}
+    build: ./nginx
+    volumes:
+      - .:/code/
+      - ./static/:/code/static/
+    ports:
+      - 1339:80
+    depends_on:
+      - app
+    restart: always
+    networks: 
+      - default
+
+ 
+
+volumes:
+  postgres_data:
+
+
+networks:
+  default:
+    name:  dinardi_${PROJECT_NAME}
+    driver: bridge
